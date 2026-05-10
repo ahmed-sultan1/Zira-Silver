@@ -1,0 +1,88 @@
+[
+  {
+    "orderId": "ZIRA-0003",
+    "name": "Ahmed Sultan",
+    "email": "",
+    "phone": "01060200506",
+    "address": "احمد ماهر",
+    "city": "جمصه",
+    "postcode": "",
+    "date": "10/05/2026, 18:38:54",
+    "paymentMethod": "cod",
+    "items": [
+      {
+        "name": "rings",
+        "price": 4500,
+        "color": "الفضي (Silver)",
+        "size": "5.m",
+        "image": "/uploads/1778427487261-648276388.jpeg"
+      },
+      {
+        "name": "Teardrop Earrings",
+        "price": 3150,
+        "color": "Silver",
+        "size": "One Size",
+        "image": "images/483578ca60b6bcc80f47249114445a26.jpg"
+      }
+    ],
+    "subtotal": 7650,
+    "shipping": 100,
+    "total": 7750,
+    "status": "pending"
+  },
+  {
+    "orderId": "ZIRA-0002",
+    "name": "Ahmed Sultan",
+    "email": "",
+    "phone": "01060200506",
+    "address": "احمد ماهر",
+    "city": "جمصه",
+    "postcode": "",
+    "date": "10/05/2026, 18:33:47",
+    "paymentMethod": "cod",
+    "items": [
+      {
+        "name": "Minimalist Band",
+        "price": 6300,
+        "color": "Silver",
+        "size": "6",
+        "image": "images/9e6213880b7f72b01b84e945ca5d2fad.jpg"
+      },
+      {
+        "name": "Infinity Necklace",
+        "price": 4037.5,
+        "color": "Silver",
+        "size": "One Size",
+        "image": "images/WhatsApp Image 2026-05-08 at 3.00.11 PM (2).jpeg"
+      }
+    ],
+    "subtotal": 10337.5,
+    "shipping": 0,
+    "total": 10337.5,
+    "status": "pending"
+  },
+  {
+    "orderId": "ZIRA-0001",
+    "name": "Ahmed Sultan",
+    "email": "soltanahmed192@gmail.com",
+    "phone": "01060200506",
+    "address": "احمد ماهر",
+    "city": "جمصه",
+    "postcode": "",
+    "date": "10/05/2026, 18:33:11",
+    "paymentMethod": "cod",
+    "items": [
+      {
+        "name": "Teardrop Earrings",
+        "price": 3150,
+        "color": "Silver",
+        "size": "One Size",
+        "image": "images/483578ca60b6bcc80f47249114445a26.jpg"
+      }
+    ],
+    "subtotal": 3150,
+    "shipping": 100,
+    "total": 3250,
+    "status": "pending"
+  }
+]

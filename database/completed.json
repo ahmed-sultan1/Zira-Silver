@@ -1,0 +1,26 @@
+[
+  {
+    "orderId": "ZIRA-0004",
+    "name": "Ahmed Sultan",
+    "email": "soltanahmed192@gmail.com",
+    "phone": "01060200506",
+    "address": "احمد ماهر",
+    "city": "جمصه",
+    "postcode": "شارع احمد ماهر",
+    "date": "10/05/2026, 23:27:49",
+    "paymentMethod": "cod",
+    "items": [
+      {
+        "name": "rings",
+        "price": 15000,
+        "color": "الفضي (Silver)",
+        "size": "5.m",
+        "image": "/uploads/1778444816957-531884382.jpg"
+      }
+    ],
+    "subtotal": 15000,
+    "shipping": 0,
+    "total": 15000,
+    "status": "completed"
+  }
+]
