@@ -13,24 +13,10 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// CORS إضافي
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
-
 // ========== STATIC FILES ==========
 app.use(express.static(path.join(__dirname, 'Public')));
 app.use('/images', express.static(path.join(__dirname, 'Public', 'images')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// ========== ENSURE DATABASE DIRECTORY EXISTS ==========
-const dbDir = path.join(__dirname, 'database');
-if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-    console.log('✅ Created database directory');
-}
 
 // ========== MULTER SETUP FOR IMAGES ==========
 const storage = multer.diskStorage({
@@ -67,6 +53,7 @@ const writeDB = (file, data) => {
 
 // ========== INITIALIZE DATABASE ==========
 const initializeDB = () => {
+    // Products
     let products = readDB('products');
     if (products.length === 0) {
         products = [
@@ -232,58 +219,43 @@ app.get('/api/orders/completed', (req, res) => {
 });
 
 app.post('/api/orders', (req, res) => {
-    console.log('📦 Received order request:', req.body);
+    const orders = readDB('orders');
+    const completed = readDB('completed');
+    let { orderId, name, email, phone, address, city, postcode, paymentMethod, items, subtotal, shipping, total } = req.body;
     
-    try {
-        const orders = readDB('orders');
-        const completed = readDB('completed');
-        const orderData = req.body;
-        
-        if (!orderData || Object.keys(orderData).length === 0) {
-            console.error('❌ No data received');
-            return res.status(400).json({ success: false, error: 'No data received' });
-        }
-        
-        let orderId = orderData.orderId;
-        if (!orderId) {
-            const allOrders = [...orders, ...completed];
-            let maxNum = 0;
-            allOrders.forEach(o => {
-                if (o.orderId && o.orderId.startsWith('ZIRA-')) {
-                    let num = parseInt(o.orderId.replace('ZIRA-', ''));
-                    if (!isNaN(num) && num > maxNum) maxNum = num;
-                }
-            });
-            orderId = 'ZIRA-' + String(maxNum + 1).padStart(4, '0');
-        }
-        
-        const newOrder = {
-            orderId: orderId,
-            name: orderData.name || 'غير معروف',
-            email: orderData.email || '',
-            phone: orderData.phone || '',
-            address: orderData.address || '',
-            city: orderData.city || '',
-            postcode: orderData.postcode || '',
-            date: new Date().toLocaleString(),
-            paymentMethod: orderData.paymentMethod || 'cod',
-            items: Array.isArray(orderData.items) ? orderData.items : [],
-            subtotal: Number(orderData.subtotal) || 0,
-            shipping: Number(orderData.shipping) || 0,
-            total: Number(orderData.total) || 0,
-            status: 'pending'
-        };
-        
-        orders.unshift(newOrder);
-        writeDB('orders', orders);
-        
-        console.log(`✅ Order ${orderId} saved successfully`);
-        res.json({ success: true, order: newOrder });
-        
-    } catch (error) {
-        console.error('❌ Error in place order:', error);
-        res.status(500).json({ success: false, error: error.message });
+    // Generate unique order ID if not provided
+    if (!orderId) {
+        const allOrders = [...orders, ...completed];
+        let maxNum = 0;
+        allOrders.forEach(o => {
+            if (o.orderId && o.orderId.startsWith('ZIRA-')) {
+                let num = parseInt(o.orderId.replace('ZIRA-', ''));
+                if (!isNaN(num) && num > maxNum) maxNum = num;
+            }
+        });
+        orderId = 'ZIRA-' + String(maxNum + 1).padStart(4, '0');
     }
+    
+    const newOrder = {
+        orderId,
+        name,
+        email: email || '',
+        phone,
+        address,
+        city,
+        postcode: postcode || '',
+        date: new Date().toLocaleString(),
+        paymentMethod,
+        items,
+        subtotal,
+        shipping,
+        total,
+        status: 'pending'
+    };
+    
+    orders.unshift(newOrder);
+    writeDB('orders', orders);
+    res.json({ success: true, order: newOrder });
 });
 
 app.put('/api/orders/complete/:orderId', (req, res) => {
