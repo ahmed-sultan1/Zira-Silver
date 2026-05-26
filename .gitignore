@@ -1,0 +1,9 @@
+node_modules/
+/uploads/*
+!/uploads/.gitkeep
+# Keep product images for deploy (ring uploads live under Public/images/uploads)
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db

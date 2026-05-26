@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZIRA Silver</title>
+  <script>
+    (function () {
+      var path = window.location.pathname.replace(/\/$/, '');
+      var parts = path.split('/').filter(Boolean);
+      var base = parts.length ? '/' + parts[0] + '/' : '/';
+      window.location.replace(base + 'Public/');
+    })();
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0;url=./Public/index.html">
+  </noscript>
+</head>
+<body>
+  <p><a href="./Public/index.html">Open ZIRA Silver</a></p>
+</body>
+</html>
