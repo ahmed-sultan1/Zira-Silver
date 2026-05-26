@@ -1,9 +1,0 @@
-{
-  "visa": false,
-  "wallet": false,
-  "cod": true,
-  "paymobApiKey": "",
-  "paymobIntegrationId": "",
-  "paymobIframeId": "",
-  "paymobHmacSecret": ""
-}
