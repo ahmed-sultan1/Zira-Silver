@@ -31,6 +31,9 @@
         .favourite-count { position: absolute; top: -8px; right: -12px; background: #d9534f; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 50%; font-family: 'Inter', sans-serif; }
 
         .hero { height: 90vh; position: relative; display: flex; align-items: center; justify-content: center; text-align: center; background-image: url('images/fc964e2fc36a1f5d0a0094b382fe7088.jpg'); background-size: cover; background-position: center; background-attachment: fixed; }
+        @supports (-webkit-touch-callout: none) {
+    .hero { background-attachment: scroll; }
+}
         .hero::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); }
         .hero-content { position: relative; z-index: 2; color: white; animation: fadeUp 1s ease; }
         .hero-content h2 { font-size: 1rem; letter-spacing: 6px; font-weight: 400; margin-bottom: 1rem; }
@@ -56,7 +59,14 @@
         @media (max-width: 1024px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 640px) { .products-grid { grid-template-columns: 1fr; } }
 
-        .product-card { background: #fff; position: relative; overflow: hidden; transition: all 0.4s ease; cursor: pointer; }
+        .product-card { background: #fff; position: relative; overflow: hidden; transition: all 0.4s ease, opacity 0.6s ease, transform 0.6s ease; cursor: pointer; opacity: 0; transform: translateY(40px); }
+.product-card.visible { opacity: 1; transform: translateY(0); }
+.product-card:nth-child(1) { transition-delay: 0.0s; }
+.product-card:nth-child(2) { transition-delay: 0.1s; }
+.product-card:nth-child(3) { transition-delay: 0.2s; }
+.product-card:nth-child(4) { transition-delay: 0.3s; }
+.product-card:nth-child(5) { transition-delay: 0.4s; }
+.product-card:nth-child(6) { transition-delay: 0.5s; }
         .product-card:hover { transform: translateY(-8px); }
         .product-image-wrapper { position: relative; overflow: hidden; }
         .product-image { width: 100%; height: 340px; object-fit: cover; transition: transform 0.8s ease; background: #f5f5f5; }
@@ -213,11 +223,30 @@ html, body { width: 100%; overflow-x: hidden; }
 .product-image { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
 
 @media (max-width: 768px) { .footer-content { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; } }
-@media (max-width: 480px) { .footer-content { grid-template-columns: 1fr; text-align: center; } .social-icons { justify-content: center; } }
+@media (max-width: 768px) {
+    .footer-content { grid-template-columns: repeat(2, 1fr) !important; gap: 1.5rem; padding: 0 1rem; }
+}
+@media (max-width: 480px) {
+    .footer-content { grid-template-columns: 1fr !important; text-align: center; padding: 0 1rem; }
+    .footer-col { padding: 0.5rem 0; }
+    .social-icons { justify-content: center; }
+    .footer { padding: 2rem 4% 1.5rem; }
+}
 
 p, h1, h2, h3, .product-title, .product-price { word-break: break-word; }
 input, select, textarea, button { max-width: 100%; }
 img { max-width: 100%; height: auto; }
+        /* Share Button */
+.share-btn { background: transparent; border: 1px solid #ddd; padding: 0.4rem 0.9rem; font-family: 'Inter', sans-serif; font-size: 0.7rem; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; margin: 0 0.5rem 0.8rem; color: #666; border-radius: 4px; }
+.share-btn:hover { border-color: #1a1a1a; color: #1a1a1a; }
+
+/* Order Now Banner */
+#order-now-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: white; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 9999; box-shadow: 0 -4px 20px rgba(0,0,0,0.4); animation: slideUpBanner 0.4s ease; }
+@keyframes slideUpBanner { from { transform: translateY(100%); } to { transform: translateY(0); } }
+#order-now-banner .banner-text { font-size: 14px; font-family: 'Cormorant Garamond', serif; letter-spacing: 1px; }
+#order-now-banner .order-now-btn { background: #c9a96e; color: white; padding: 10px 24px; border-radius: 25px; font-weight: 600; text-decoration: none; font-size: 13px; letter-spacing: 1px; border: none; cursor: pointer; transition: background 0.3s; font-family: 'Inter', sans-serif; }
+#order-now-banner .order-now-btn:hover { background: #b8934d; }
+#order-now-banner .close-banner { background: transparent; border: none; color: #aaa; font-size: 20px; cursor: pointer; padding: 4px 8px; }
     </style>
 </head>
 
@@ -288,8 +317,7 @@ img { max-width: 100%; height: auto; }
     <div class="product-modal" id="productModal"><div class="product-modal-content"><button class="close-product-modal" onclick="closeProductModal()">✕</button><div class="product-modal-body" id="productModalBody"></div></div></div>
 
    <footer class="footer" id="mainFooter">
-    <div class="footer-content" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; align-items: start;">
-        <div class="footer-col">
+<div class="footer-content" style="align-items: start;">        <div class="footer-col">
             <h3>ZIRA</h3>
             <p>Fine silver jewelry crafted for generations.</p>
         </div>
@@ -444,7 +472,7 @@ function renderProducts() {
         const isFav = isFavourite(p.id);
 
         return `
-        <div class="product-card" onclick="openProductModal(${p.id})">
+        <div class="product-card" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
 
             <div class="product-image-wrapper">
 
@@ -500,13 +528,26 @@ function renderProducts() {
             >
                 ADD TO CART
             </button>
+            <button class="share-btn" onclick="event.stopPropagation(); shareProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')">
+    <i class="fas fa-share-alt"></i> SHARE
+</button>
 
         </div>
         `;
     }).join('');
+    // Fade Up Observer
+requestAnimationFrame(() => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.product-card').forEach(card => observer.observe(card));
+});
 }
-        
-        
      function openProductModal(id) {
 
     currentProduct = products.find(p => p.id === id);
@@ -1252,6 +1293,51 @@ if (cityInputField) {
         }
     });
 }
+        // ===== SHARE PRODUCT =====
+function shareProduct(productId, productName) {
+    const url = `${window.location.origin}${window.location.pathname}?product=${productId}`;
+    if (navigator.share) {
+        navigator.share({ title: productName + ' — ZIRA Silver', text: '✨ ' + productName, url: url });
+    } else {
+        navigator.clipboard.writeText(url).then(() => showToast('🔗 Link copied!'));
+    }
+}
+
+// ===== ORDER NOW BANNER (عند فتح رابط شير) =====
+(function checkSharedProduct() {
+    const params = new URLSearchParams(window.location.search);
+    const productId = parseInt(params.get('product'));
+    if (!productId) return;
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            // اسكرول للمنتج
+            const productEl = document.querySelector(`[data-product-id="${productId}"]`);
+            if (productEl) {
+                productEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                productEl.style.outline = '2px solid #c9a96e';
+                setTimeout(() => productEl.style.outline = '', 3000);
+            } else {
+                document.getElementById('shopSection')?.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // إظهار البانر
+            if (document.getElementById('order-now-banner')) return;
+            const banner = document.createElement('div');
+            banner.id = 'order-now-banner';
+            banner.innerHTML = `
+                <span class="banner-text">✨ Order this piece now</span>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <button class="order-now-btn" onclick="openProductModal(${productId}); document.getElementById('order-now-banner').remove();">
+                        ORDER NOW
+                    </button>
+                    <button class="close-banner" onclick="document.getElementById('order-now-banner').remove()">✕</button>
+                </div>
+            `;
+            document.body.appendChild(banner);
+        }, 1000);
+    });
+})();
     </script>
 </body>
 </html>
