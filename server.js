@@ -116,7 +116,7 @@ app.post('/api/admin/change-password', async (req, res) => {
 
 // ========== PRODUCTS ==========
 app.get('/api/products', async (req, res) => {
-    const products = await col('products').find({}).toArray();
+    const products = await col('products').find({}).sort({ _id: -1 }).toArray();
     res.json(products);
 });
 
