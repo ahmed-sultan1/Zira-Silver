@@ -1,193 +1,135 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const fs = require('fs');
 const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
+
+// ========== CLOUDINARY CONFIG ==========
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// ========== MONGODB ==========
+const client = new MongoClient(process.env.MONGODB_URI, {
+    serverApi: { version: ServerApiVersion.v1, strict: true, deprecationErrors: true }
+});
+
+let db;
+async function connectDB() {
+    await client.connect();
+    db = client.db('zira');
+    console.log('✅ MongoDB connected');
+    await initializeDB();
+}
+
+const col = (name) => db.collection(name);
 
 // ========== MIDDLEWARE ==========
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// ========== STATIC FILES ==========
 app.use(express.static(path.join(__dirname, 'Public')));
-app.use('/images', express.static(path.join(__dirname, 'Public', 'images')));
 
-const UPLOAD_DIRS = [
-    path.join(__dirname, 'Public', 'images', 'uploads'),
-    path.join(__dirname, 'uploads')
-];
-UPLOAD_DIRS.forEach((dir) => {
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-});
-
-app.use('/uploads', (req, res, next) => {
-    if (req.method !== 'GET' && req.method !== 'HEAD') return next();
-    const rel = decodeURIComponent(req.path.replace(/^\//, ''));
-    if (!rel || rel.includes('..')) return next();
-    for (const dir of UPLOAD_DIRS) {
-        const filePath = path.join(dir, rel);
-        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-            return res.sendFile(filePath);
-        }
-    }
-    next();
-});
-
-// ========== MULTER SETUP FOR IMAGES ==========
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, UPLOAD_DIRS[0]);
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
-        cb(null, uniqueName);
-    }
+// ========== MULTER CLOUDINARY ==========
+const storage = new CloudinaryStorage({
+    cloudinary,
+    params: { folder: 'zira-silver', allowed_formats: ['jpg', 'jpeg', 'png', 'webp'] }
 });
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// ========== helper functions ==========
-const readDB = (file) => {
-    try {
-        const dbPath = path.join(__dirname, 'database', `${file}.json`);
-        if (!fs.existsSync(dbPath)) {
-            fs.writeFileSync(dbPath, JSON.stringify([]));
-            return [];
-        }
-        return JSON.parse(fs.readFileSync(dbPath, 'utf8'));
-    } catch (e) {
-        return [];
-    }
-};
-
-const writeDB = (file, data) => {
-    const dbPath = path.join(__dirname, 'database', `${file}.json`);
-    fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-};
-
-// ========== INITIALIZE DATABASE ==========
-const initializeDB = () => {
-    // Products
-    let products = readDB('products');
-    if (products.length === 0) {
-        products = [
+// ========== INITIALIZE DB ==========
+async function initializeDB() {
+    const products = await col('products').countDocuments();
+    if (products === 0) {
+        await col('products').insertMany([
             { id: 1, name: "Celestial Pendant", price: 3800, discount: 0, hasDiscount: false, images: ["images/WhatsApp Image 2026-05-08 at 3.00.11 PM.jpeg"], category: "necklaces", status: "active", createdAt: new Date().toISOString(), isNew: true, colors: [{ code: "#C0C0C0", name: "Silver" }], availableColors: ["Silver"], availableSizes: ["One Size"], description: "A stunning celestial pendant crafted from pure 925 silver." },
             { id: 2, name: "Silver Moon Ring", price: 2700, discount: 0, hasDiscount: false, images: ["images/WhatsApp Image 2026-05-08 at 3.00.12 PM (1).jpeg"], category: "rings", status: "active", createdAt: new Date().toISOString(), isNew: false, colors: [{ code: "#C0C0C0", name: "Silver" }], availableColors: ["Silver"], availableSizes: ["5","6","7","8","9"], description: "Elegant moon phase ring." },
             { id: 3, name: "Dewdrop Earrings", price: 2050, discount: 0, hasDiscount: false, images: ["images/359817c2d48115c5d565fb4218435947.jpg"], category: "earrings", status: "active", createdAt: new Date().toISOString(), isNew: false, colors: [{ code: "#C0C0C0", name: "Silver" }, { code: "#FFD700", name: "Gold" }], availableColors: ["Silver","Gold"], availableSizes: ["One Size"], description: "Delicate dewdrop earrings." },
             { id: 4, name: "Infinity Necklace", price: 4750, discount: 15, hasDiscount: true, images: ["images/WhatsApp Image 2026-05-08 at 3.00.11 PM (2).jpeg"], category: "necklaces", status: "active", createdAt: new Date().toISOString(), isNew: true, colors: [{ code: "#C0C0C0", name: "Silver" }], availableColors: ["Silver"], availableSizes: ["One Size"], description: "Elegant infinity symbol necklace." },
             { id: 5, name: "Minimalist Band", price: 6300, discount: 0, hasDiscount: false, images: ["images/9e6213880b7f72b01b84e945ca5d2fad.jpg"], category: "rings", status: "active", createdAt: new Date().toISOString(), isNew: false, colors: [{ code: "#C0C0C0", name: "Silver" }], availableColors: ["Silver"], availableSizes: ["6","7","8"], description: "Simple yet elegant silver band." },
             { id: 6, name: "Teardrop Earrings", price: 3500, discount: 10, hasDiscount: true, images: ["images/483578ca60b6bcc80f47249114445a26.jpg"], category: "earrings", status: "active", createdAt: new Date().toISOString(), isNew: false, colors: [{ code: "#C0C0C0", name: "Silver" }], availableColors: ["Silver"], availableSizes: ["One Size"], description: "Graceful teardrop design." }
-        ];
-        writeDB('products', products);
+        ]);
     }
 
-    let orders = readDB('orders');
-    if (orders.length === 0) writeDB('orders', []);
-
-    let completed = readDB('completed');
-    if (completed.length === 0) writeDB('completed', []);
-
-    let shipping = readDB('shipping');
-    if (shipping.length === 0) {
-        shipping = { "كفر الشيخ":110, "بيال":110, "الحامول":110, "الرياض":110, "بلطيم":110, "دمنهور":110 };
-        writeDB('shipping', shipping);
+    const settings = await col('settings').countDocuments();
+    if (settings === 0) {
+        await col('settings').insertOne({ defaultShippingPrice: 100, freeShippingThreshold: 10000, storeName: "ZIRA", adminEmail: "admin@zira.com" });
     }
 
-    let categories = readDB('categories');
-    if (categories.length === 0) writeDB('categories', []);
-
-    let settings = readDB('settings');
-    if (Object.keys(settings).length === 0) {
-        settings = { defaultShippingPrice: 100, freeShippingThreshold: 10000, storeName: "ZIRA", adminEmail: "admin@zira.com" };
-        writeDB('settings', settings);
+    const payment = await col('payment').countDocuments();
+    if (payment === 0) {
+        await col('payment').insertOne({ visa: true, wallet: true, cod: true });
     }
 
-    let payment = readDB('payment');
-    if (Object.keys(payment).length === 0) {
-        payment = { visa: true, wallet: true, cod: true };
-        writeDB('payment', payment);
+    const footer = await col('footer').countDocuments();
+    if (footer === 0) {
+        await col('footer').insertOne({ phone: "+201060200506", email: "hello@zira.com", instagram: "", facebook: "", tiktok: "", whatsapp: "" });
     }
 
-    let footer = readDB('footer');
-    if (Object.keys(footer).length === 0) {
-        footer = { phone: "+201060200506", email: "hello@zira.com", instagram: "", facebook: "", tiktok: "", whatsapp: "" };
-        writeDB('footer', footer);
+    const policy = await col('policy').countDocuments();
+    if (policy === 0) {
+        await col('policy').insertOne({ companyName: "", commercialRegistry: "", returnPolicy: "", returnsContent: "" });
     }
 
-    let policy = readDB('policy');
-    if (Object.keys(policy).length === 0) {
-        policy = { companyName: "", commercialRegistry: "", returnPolicy: "", returnsContent: "" };
-        writeDB('policy', policy);
+    const shipping = await col('shipping').countDocuments();
+    if (shipping === 0) {
+        await col('shipping').insertOne({ "كفر الشيخ":110, "بيال":110, "الحامول":110, "الرياض":110, "بلطيم":110, "دمنهور":110 });
     }
 
-    let admin = readDB('admin');
-    if (admin.length === 0) {
+    const admin = await col('admin').countDocuments();
+    if (admin === 0) {
         const hashedPassword = bcrypt.hashSync('Zira2026', 10);
-        writeDB('admin', [{ username: 'admin', password: hashedPassword }]);
+        await col('admin').insertOne({ username: 'admin', password: hashedPassword });
     }
-};
-
-initializeDB();
+}
 
 // ========== HTML ROUTES ==========
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'index.html'));
-});
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'index.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'admin.html')));
+app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'admin.html'));
-});
-
-// ========== HEALTH (for hosting platforms) ==========
-app.get('/api/health', (req, res) => {
-    res.json({ ok: true });
-});
-
-// ========== AUTH API ==========
-app.post('/api/admin/login', (req, res) => {
+// ========== AUTH ==========
+app.post('/api/admin/login', async (req, res) => {
     const { password } = req.body;
-    const admin = readDB('admin');
-    if (admin.length > 0 && bcrypt.compareSync(password, admin[0].password)) {
-        res.json({ success: true, message: "Login successful" });
+    const admin = await col('admin').findOne({});
+    if (admin && bcrypt.compareSync(password, admin.password)) {
+        res.json({ success: true });
     } else {
         res.status(401).json({ success: false, message: "Invalid password" });
     }
 });
 
-app.post('/api/admin/change-password', (req, res) => {
+app.post('/api/admin/change-password', async (req, res) => {
     const { newPassword } = req.body;
-    if (!newPassword || newPassword.length < 6) {
-        return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
-    }
+    if (!newPassword || newPassword.length < 6) return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
-    writeDB('admin', [{ username: 'admin', password: hashedPassword }]);
-    res.json({ success: true, message: "Password changed successfully" });
+    await col('admin').updateOne({}, { $set: { password: hashedPassword } });
+    res.json({ success: true });
 });
 
-// ========== PRODUCTS API ==========
-app.get('/api/products', (req, res) => {
-    const products = readDB('products');
+// ========== PRODUCTS ==========
+app.get('/api/products', async (req, res) => {
+    const products = await col('products').find({}).toArray();
     res.json(products);
 });
 
-app.get('/api/products/:id', (req, res) => {
-    const products = readDB('products');
-    const product = products.find(p => p.id == req.params.id);
+app.get('/api/products/:id', async (req, res) => {
+    const product = await col('products').findOne({ id: parseInt(req.params.id) });
     if (product) res.json(product);
     else res.status(404).json({ error: "Product not found" });
 });
 
-app.post('/api/products', upload.array('images', 10), (req, res) => {
+app.post('/api/products', upload.array('images', 10), async (req, res) => {
     try {
-        const products = readDB('products');
         const { name, price, discount, hasDiscount, category, description, isNew, colors, sizes } = req.body;
-        
-        const imageUrls = req.files ? req.files.map(f => `/uploads/${f.filename}`) : [];
-        
+        const imageUrls = req.files ? req.files.map(f => f.path) : [];
         const newProduct = {
             id: Date.now(),
             name,
@@ -204,61 +146,47 @@ app.post('/api/products', upload.array('images', 10), (req, res) => {
             availableSizes: sizes ? sizes.split(',').map(s => s.trim()) : ["One Size"],
             description: description || ""
         };
-        
-        products.unshift(newProduct);
-        writeDB('products', products);
+        await col('products').insertOne(newProduct);
         res.json({ success: true, product: newProduct });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-app.put('/api/products/:id', (req, res) => {
-    const products = readDB('products');
-    const index = products.findIndex(p => p.id == req.params.id);
-    if (index === -1) return res.status(404).json({ error: "Product not found" });
-    
-    products[index] = { ...products[index], ...req.body };
-    writeDB('products', products);
-    res.json({ success: true, product: products[index] });
+app.put('/api/products/:id', async (req, res) => {
+    const { _id, ...update } = req.body;
+    await col('products').updateOne({ id: parseInt(req.params.id) }, { $set: update });
+    const product = await col('products').findOne({ id: parseInt(req.params.id) });
+    res.json({ success: true, product });
 });
 
-app.delete('/api/products/:id', (req, res) => {
-    const products = readDB('products');
-    const filtered = products.filter(p => p.id != req.params.id);
-    writeDB('products', filtered);
+app.delete('/api/products/:id', async (req, res) => {
+    await col('products').deleteOne({ id: parseInt(req.params.id) });
     res.json({ success: true });
 });
 
-// ========== ORDERS API ==========
-app.get('/api/orders', (req, res) => {
-    const orders = readDB('orders');
+// ========== ORDERS ==========
+app.get('/api/orders', async (req, res) => {
+    const orders = await col('orders').find({}).toArray();
     res.json(orders);
 });
 
-app.get('/api/orders/completed', (req, res) => {
-    const completed = readDB('completed');
+app.get('/api/orders/completed', async (req, res) => {
+    const completed = await col('completed').find({}).toArray();
     res.json(completed);
 });
 
-app.post('/api/orders', (req, res) => {
+app.post('/api/orders', async (req, res) => {
     try {
-        const orders = readDB('orders');
-        const completed = readDB('completed');
         let { orderId, name, email, phone, address, city, postcode, paymentMethod, items, subtotal, shipping, total } = req.body;
+        if (!name || !phone || !address || !city) return res.status(400).json({ success: false, message: 'Missing required fields' });
+        if (!items || !Array.isArray(items) || items.length === 0) return res.status(400).json({ success: false, message: 'Order must include items' });
 
-        if (!name || !phone || !address || !city) {
-            return res.status(400).json({ success: false, message: 'Missing required shipping fields' });
-        }
-        if (!items || !Array.isArray(items) || items.length === 0) {
-            return res.status(400).json({ success: false, message: 'Order must include at least one item' });
-        }
-        
-        // Generate unique order ID if not provided
         if (!orderId) {
-            const allOrders = [...orders, ...completed];
+            const allOrders = await col('orders').find({}).toArray();
+            const allCompleted = await col('completed').find({}).toArray();
             let maxNum = 0;
-            allOrders.forEach(o => {
+            [...allOrders, ...allCompleted].forEach(o => {
                 if (o.orderId && o.orderId.startsWith('ZIRA-')) {
                     let num = parseInt(o.orderId.replace('ZIRA-', ''));
                     if (!isNaN(num) && num > maxNum) maxNum = num;
@@ -266,163 +194,131 @@ app.post('/api/orders', (req, res) => {
             });
             orderId = 'ZIRA-' + String(maxNum + 1).padStart(4, '0');
         }
-        
-        const newOrder = {
-            orderId,
-            name,
-            email: email || '',
-            phone,
-            address,
-            city,
-            postcode: postcode || '',
-            date: new Date().toLocaleString(),
-            paymentMethod: paymentMethod || 'cod',
-            items,
-            subtotal: Number(subtotal) || 0,
-            shipping: Number(shipping) || 0,
-            total: Number(total) || 0,
-            status: 'pending'
-        };
-        
-        orders.unshift(newOrder);
-        writeDB('orders', orders);
+
+        const newOrder = { orderId, name, email: email || '', phone, address, city, postcode: postcode || '', date: new Date().toLocaleString(), paymentMethod: paymentMethod || 'cod', items, subtotal: Number(subtotal) || 0, shipping: Number(shipping) || 0, total: Number(total) || 0, status: 'pending' };
+        await col('orders').insertOne(newOrder);
         res.json({ success: true, order: newOrder });
     } catch (error) {
-        console.error('POST /api/orders error:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 });
 
-app.put('/api/orders/complete/:orderId', (req, res) => {
-    let orders = readDB('orders');
-    let completed = readDB('completed');
-    
-    const orderIndex = orders.findIndex(o => o.orderId === req.params.orderId);
-    if (orderIndex === -1) return res.status(404).json({ error: "Order not found" });
-    
-    const completedOrder = orders[orderIndex];
-    completedOrder.status = 'completed';
-    completed.unshift(completedOrder);
-    orders = orders.filter(o => o.orderId !== req.params.orderId);
-    
-    writeDB('orders', orders);
-    writeDB('completed', completed);
+app.put('/api/orders/complete/:orderId', async (req, res) => {
+    const order = await col('orders').findOne({ orderId: req.params.orderId });
+    if (!order) return res.status(404).json({ error: "Order not found" });
+    order.status = 'completed';
+    await col('completed').insertOne(order);
+    await col('orders').deleteOne({ orderId: req.params.orderId });
     res.json({ success: true });
 });
 
-// ========== SHIPPING API ==========
-app.get('/api/shipping', (req, res) => {
-    const shipping = readDB('shipping');
-    res.json(shipping);
+// ========== SHIPPING ==========
+app.get('/api/shipping', async (req, res) => {
+    const doc = await col('shipping').findOne({});
+    const { _id, ...data } = doc || {};
+    res.json(data);
 });
 
-app.post('/api/shipping', (req, res) => {
-    const shipping = readDB('shipping');
+app.post('/api/shipping', async (req, res) => {
     const { city, price } = req.body;
-    shipping[city] = price;
-    writeDB('shipping', shipping);
+    await col('shipping').updateOne({}, { $set: { [city]: price } }, { upsert: true });
     res.json({ success: true });
 });
 
-app.delete('/api/shipping/:city', (req, res) => {
-    const shipping = readDB('shipping');
-    delete shipping[decodeURIComponent(req.params.city)];
-    writeDB('shipping', shipping);
+app.delete('/api/shipping/:city', async (req, res) => {
+    await col('shipping').updateOne({}, { $unset: { [decodeURIComponent(req.params.city)]: "" } });
     res.json({ success: true });
 });
 
-// ========== CATEGORIES API ==========
-app.get('/api/categories', (req, res) => {
-    const categories = readDB('categories');
+// ========== CATEGORIES ==========
+app.get('/api/categories', async (req, res) => {
+    const categories = await col('categories').find({}).toArray();
     res.json(categories);
 });
 
-app.post('/api/categories', (req, res) => {
-    const categories = readDB('categories');
+app.post('/api/categories', async (req, res) => {
     const { name, value } = req.body;
     const newCategory = { id: Date.now().toString(), name, value };
-    categories.push(newCategory);
-    writeDB('categories', categories);
+    await col('categories').insertOne(newCategory);
     res.json({ success: true, category: newCategory });
 });
 
-app.delete('/api/categories/:id', (req, res) => {
-    const categories = readDB('categories');
-    const filtered = categories.filter(c => c.id !== req.params.id);
-    writeDB('categories', filtered);
+app.delete('/api/categories/:id', async (req, res) => {
+    await col('categories').deleteOne({ id: req.params.id });
     res.json({ success: true });
 });
 
-// ========== SETTINGS API ==========
-app.get('/api/settings', (req, res) => {
-    const settings = readDB('settings');
-    res.json(settings);
+// ========== SETTINGS ==========
+app.get('/api/settings', async (req, res) => {
+    const doc = await col('settings').findOne({});
+    const { _id, ...data } = doc || {};
+    res.json(data);
 });
 
-app.put('/api/settings', (req, res) => {
-    const settings = readDB('settings');
-    const updated = { ...settings, ...req.body };
-    writeDB('settings', updated);
-    res.json({ success: true, settings: updated });
+app.put('/api/settings', async (req, res) => {
+    const { _id, ...update } = req.body;
+    await col('settings').updateOne({}, { $set: update }, { upsert: true });
+    const doc = await col('settings').findOne({});
+    const { _id: id, ...data } = doc;
+    res.json({ success: true, settings: data });
 });
 
-// ========== PAYMENT API ==========
-app.get('/api/payment', (req, res) => {
-    const payment = readDB('payment');
-    res.json(payment);
+// ========== PAYMENT ==========
+app.get('/api/payment', async (req, res) => {
+    const doc = await col('payment').findOne({});
+    const { _id, ...data } = doc || {};
+    res.json(data);
 });
 
-app.put('/api/payment', (req, res) => {
-    const payment = readDB('payment');
-    const updated = { ...payment, ...req.body };
-    writeDB('payment', updated);
-    res.json({ success: true, payment: updated });
+app.put('/api/payment', async (req, res) => {
+    const { _id, ...update } = req.body;
+    await col('payment').updateOne({}, { $set: update }, { upsert: true });
+    res.json({ success: true });
 });
 
-// ========== FOOTER API ==========
-app.get('/api/footer', (req, res) => {
-    const footer = readDB('footer');
-    res.json(footer);
+// ========== FOOTER ==========
+app.get('/api/footer', async (req, res) => {
+    const doc = await col('footer').findOne({});
+    const { _id, ...data } = doc || {};
+    res.json(data);
 });
 
-app.put('/api/footer', (req, res) => {
-    const footer = readDB('footer');
-    const updated = { ...footer, ...req.body };
-    writeDB('footer', updated);
-    res.json({ success: true, footer: updated });
+app.put('/api/footer', async (req, res) => {
+    const { _id, ...update } = req.body;
+    await col('footer').updateOne({}, { $set: update }, { upsert: true });
+    res.json({ success: true });
 });
 
-// ========== POLICY API ==========
-app.get('/api/policy', (req, res) => {
-    const policy = readDB('policy');
-    res.json(policy);
+// ========== POLICY ==========
+app.get('/api/policy', async (req, res) => {
+    const doc = await col('policy').findOne({});
+    const { _id, ...data } = doc || {};
+    res.json(data);
 });
 
-app.put('/api/policy', (req, res) => {
-    const policy = readDB('policy');
-    const updated = { ...policy, ...req.body };
-    writeDB('policy', updated);
-    res.json({ success: true, policy: updated });
+app.put('/api/policy', async (req, res) => {
+    const { _id, ...update } = req.body;
+    await col('policy').updateOne({}, { $set: update }, { upsert: true });
+    res.json({ success: true });
 });
 
-// ========== STATS API ==========
-app.get('/api/stats', (req, res) => {
-    const orders = readDB('orders');
-    const completed = readDB('completed');
+// ========== STATS ==========
+app.get('/api/stats', async (req, res) => {
+    const orders = await col('orders').find({}).toArray();
+    const completed = await col('completed').find({}).toArray();
     const allOrders = [...orders, ...completed];
-    const totalOrders = orders.length;
-    const completedOrders = completed.length;
-    const totalSales = allOrders.length;
-    const totalRevenue = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
-    
-    res.json({ totalSales, totalOrders, completedOrders, totalRevenue });
+    res.json({
+        totalSales: allOrders.length,
+        totalOrders: orders.length,
+        completedOrders: completed.length,
+        totalRevenue: allOrders.reduce((sum, o) => sum + (o.total || 0), 0)
+    });
 });
 
-// ========== SERVER START ==========
+// ========== START ==========
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || '0.0.0.0';
-app.listen(PORT, HOST, () => {
-    console.log(`🚀 ZIRA Server running on port ${PORT}`);
-    console.log(`📱 Frontend: http://localhost:${PORT}`);
-    console.log(`🔒 Admin Panel: http://localhost:${PORT}/admin`);
-});
+connectDB().then(() => {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 ZIRA Server running on port ${PORT}`);
+    });
+}).catch(console.error);
