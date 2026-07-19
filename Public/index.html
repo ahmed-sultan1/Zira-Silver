@@ -549,7 +549,7 @@ requestAnimationFrame(() => {
     }, { threshold: 0.1 });
     document.querySelectorAll('.product-card').forEach(card => observer.observe(card));
 });
-}
+
      function openProductModal(id) {
 
     currentProduct = products.find(p => p.id === id);
@@ -1071,6 +1071,7 @@ window.validateAndSendOrder = async function() {
 }
 
 // ========== UPDATE window.load event ==========
+
 let _fadeCards = [];
 let _fadeTicking = false;
 
@@ -1105,7 +1106,6 @@ function onFadeScroll() {
 
 window.addEventListener('scroll', onFadeScroll, { passive: true });
 window.addEventListener('resize', onFadeScroll);
-// استبدل الـ window.load الموجود ده:
 window.addEventListener('load', async () => {
     setTimeout(() => {
         let p = document.getElementById('preloader');
