@@ -178,7 +178,7 @@
         @keyframes toastFadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         .image-zoom-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: flex; justify-content: center; align-items: center; z-index: 5000; cursor: pointer; }
         .image-zoom-overlay img { max-width: 90%; max-height: 90%; object-fit: contain; }
-        .fade-in-up { opacity: 0; transform: translateY(50px); transition: all 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+        .fade-in-up { opacity: 0; transform: translateY(50px); will-change: opacity, transform; }
         .fade-in-up.show { opacity: 1; transform: translateY(0); }
         .zoom-in { opacity: 0; transform: scale(0.85); transition: all 0.8s ease; }
         .zoom-in.show { opacity: 1; transform: scale(1); }
@@ -472,7 +472,7 @@ function renderProducts() {
         const isFav = isFavourite(p.id);
 
         return `
-        <div class="product-card" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
+        <div class="product-card fade-in-up" onclick="openProductModal(${p.id})">
 
             <div class="product-image-wrapper">
 
@@ -535,6 +535,8 @@ function renderProducts() {
         </div>
         `;
     }).join('');
+    requestAnimationFrame(updateScrollFadeCards);
+}
     // Fade Up Observer
 requestAnimationFrame(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -1069,6 +1071,40 @@ window.validateAndSendOrder = async function() {
 }
 
 // ========== UPDATE window.load event ==========
+let _fadeCards = [];
+let _fadeTicking = false;
+
+function updateScrollFadeCards() {
+    _fadeTicking = false;
+    _fadeCards = Array.from(document.querySelectorAll('.fade-in-up'));
+
+    const vh = window.innerHeight;
+    const startPoint = vh * 0.95;
+    const endPoint = vh * 0.55;
+
+    for (const card of _fadeCards) {
+        const rect = card.getBoundingClientRect();
+        if (rect.bottom < -50 || rect.top > vh + 50) continue;
+
+        let progress = (startPoint - rect.top) / (startPoint - endPoint);
+        progress = Math.max(0, Math.min(1, progress));
+
+        card.style.opacity = progress;
+        card.style.transform = `translateY(${50 * (1 - progress)}px)`;
+
+        if (progress >= 1) card.classList.add('show'); else card.classList.remove('show');
+    }
+}
+
+function onFadeScroll() {
+    if (!_fadeTicking) {
+        _fadeTicking = true;
+        requestAnimationFrame(updateScrollFadeCards);
+    }
+}
+
+window.addEventListener('scroll', onFadeScroll, { passive: true });
+window.addEventListener('resize', onFadeScroll);
 // استبدل الـ window.load الموجود ده:
 window.addEventListener('load', async () => {
     setTimeout(() => {
