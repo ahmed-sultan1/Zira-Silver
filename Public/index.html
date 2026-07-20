@@ -57,9 +57,16 @@
 
         .products-grid { padding: 5rem 6%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
         @media (max-width: 1024px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 640px) { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
+        @media (max-width: 640px) { .products-grid { grid-template-columns: 1fr; } }
 
-        .product-card { background: #fff; position: relative; overflow: hidden; transition: transform 0.4s ease; cursor: pointer; }
+        .product-card { background: #fff; position: relative; overflow: hidden; transition: all 0.4s ease, opacity 0.6s ease, transform 0.6s ease; cursor: pointer; opacity: 0; transform: translateY(40px); }
+.product-card.visible { opacity: 1; transform: translateY(0); }
+.product-card:nth-child(1) { transition-delay: 0.0s; }
+.product-card:nth-child(2) { transition-delay: 0.1s; }
+.product-card:nth-child(3) { transition-delay: 0.2s; }
+.product-card:nth-child(4) { transition-delay: 0.3s; }
+.product-card:nth-child(5) { transition-delay: 0.4s; }
+.product-card:nth-child(6) { transition-delay: 0.5s; }
         .product-card:hover { transform: translateY(-8px); }
         .product-image-wrapper { position: relative; overflow: hidden; }
         .product-image { width: 100%; height: 340px; object-fit: cover; transition: transform 0.8s ease; background: #f5f5f5; }
@@ -171,7 +178,7 @@
         @keyframes toastFadeUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         .image-zoom-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: flex; justify-content: center; align-items: center; z-index: 5000; cursor: pointer; }
         .image-zoom-overlay img { max-width: 90%; max-height: 90%; object-fit: contain; }
-        .fade-in-up { opacity: 0; transform: translateY(50px); will-change: opacity, transform; }
+        .fade-in-up { opacity: 0; transform: translateY(50px); transition: all 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
         .fade-in-up.show { opacity: 1; transform: translateY(0); }
         .zoom-in { opacity: 0; transform: scale(0.85); transition: all 0.8s ease; }
         .zoom-in.show { opacity: 1; transform: scale(1); }
@@ -198,13 +205,7 @@ html, body { width: 100%; overflow-x: hidden; }
 @media (min-width: 768px) and (max-width: 1199px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 576px) and (max-width: 767px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 575px) {
-    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 0.9rem; padding: 1.5rem 4%; }
-    .product-title { font-size: 0.9rem; margin: 0.7rem 0 0.3rem; padding: 0 0.3rem; }
-    .product-price { font-size: 0.8rem; margin-bottom: 0.7rem; padding: 0 0.3rem; gap: 6px; }
-    .discounted-price { font-size: 0.95rem; }
-    .add-to-cart { font-size: 0.6rem; padding: 0.45rem 0.8rem; margin: 0 0.3rem 0.7rem; width: calc(100% - 0.6rem); }
-    .favourite-btn { width: 32px; height: 32px; font-size: 1rem; bottom: 10px; right: 10px; }
-    .discount-badge { font-size: 0.65rem; padding: 4px 10px; top: 10px; left: 10px; }
+    .products-grid { grid-template-columns: 1fr; }
     .navbar { flex-direction: column; gap: 1rem; padding: 1rem; }
     .nav-links { justify-content: center; gap: 1rem; }
     .hero h1 { font-size: 2rem; }
@@ -246,79 +247,10 @@ img { max-width: 100%; height: auto; }
 #order-now-banner .order-now-btn { background: #c9a96e; color: white; padding: 10px 24px; border-radius: 25px; font-weight: 600; text-decoration: none; font-size: 13px; letter-spacing: 1px; border: none; cursor: pointer; transition: background 0.3s; font-family: 'Inter', sans-serif; }
 #order-now-banner .order-now-btn:hover { background: #b8934d; }
 #order-now-banner .close-banner { background: transparent; border: none; color: #aaa; font-size: 20px; cursor: pointer; padding: 4px 8px; }
-
-/* ===================== ARTSY-INSPIRED PROFESSIONAL THEME ===================== */
-:root {
-    --as-cream: #fdfbf7;
-    --as-cream-soft: #f6f1e9;
-    --as-ink: #201d1a;
-    --as-gold: #c9a96e;
-    --as-gold-dark: #a9834a;
-    --as-gray: #7a756c;
-    --as-line: #e7e0d3;
-}
-
-body { background-color: var(--as-cream); color: var(--as-ink); }
-
-.as-announce { background: var(--as-ink); color: var(--as-cream); text-align: center; font-size: 0.7rem; letter-spacing: 2.5px; padding: 9px 10px; font-family: 'Inter', sans-serif; text-transform: uppercase; }
-
-.navbar { background: rgba(253, 251, 247, 0.97); border-bottom: 1px solid var(--as-line); padding: 1.3rem 6%; }
-.logo { letter-spacing: 4px; font-weight: 600; color: var(--as-ink); }
-.nav-links a { position: relative; font-size: 0.78rem; letter-spacing: 1.5px; color: var(--as-ink); opacity: 1; padding-bottom: 4px; }
-.nav-links a::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 0; height: 1px; background: var(--as-gold-dark); transition: width 0.3s ease; }
-.nav-links a:hover::after { width: 100%; }
-.nav-links a:hover { opacity: 1; color: var(--as-gold-dark); }
-.icon-btn { color: var(--as-ink); }
-.cart-count, .favourite-count { background: var(--as-gold-dark); }
-
-.hero::after { background: linear-gradient(180deg, rgba(20,18,15,0.18), rgba(20,18,15,0.55)); }
-.hero-content h2 { letter-spacing: 8px; font-weight: 500; color: var(--as-gold); }
-.hero-content h1 { font-weight: 600; }
-.shop-btn { background: var(--as-gold); border-color: var(--as-gold); color: var(--as-ink); border-radius: 40px; padding: 0.9rem 3rem; font-weight: 600; }
-.shop-btn:hover { background: var(--as-gold-dark); border-color: var(--as-gold-dark); color: #fff; }
-
-.as-trust { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; max-width: 1100px; margin: 0 auto; padding: 3rem 6% 0; text-align: center; }
-.as-trust-item i { font-size: 1.4rem; color: var(--as-gold-dark); margin-bottom: 0.6rem; display: block; }
-.as-trust-item span { font-size: 0.7rem; letter-spacing: 1px; color: var(--as-gray); text-transform: uppercase; font-family: 'Inter', sans-serif; }
-@media (max-width: 700px) { .as-trust { grid-template-columns: repeat(2, 1fr); gap: 1.5rem 1rem; } }
-
-.filters-section { padding-top: 3.5rem; }
-.filter-btn { padding: 0.55rem 1.3rem; border: 1px solid var(--as-line); border-radius: 30px; color: var(--as-gray); }
-.filter-btn.active, .filter-btn:hover { border-color: var(--as-gold-dark); color: var(--as-ink); background: var(--as-cream-soft); }
-.filter-btn.active::after { display: none; }
-
-.products-grid { gap: 2rem; }
-.product-card { border-radius: 14px; box-shadow: 0 2px 14px rgba(30,25,15,0.05); transition: box-shadow 0.4s ease, transform 0.4s ease; }
-.product-card:hover { box-shadow: 0 14px 30px rgba(30,25,15,0.12); }
-.product-image-wrapper { border-radius: 14px 14px 0 0; }
-.discount-badge { background: linear-gradient(135deg, var(--as-gold), var(--as-gold-dark)); box-shadow: 0 4px 12px rgba(169,131,74,0.35); }
-.product-title { font-weight: 600; }
-.discounted-price { color: var(--as-gold-dark); }
-.add-to-cart, .share-btn { border-radius: 30px; border-color: var(--as-ink); }
-.add-to-cart:hover { background: var(--as-ink); }
-.favourite-btn.active i, .favourite-btn:hover i { color: #c0435a !important; }
-
-.cart-sidebar, .favourite-sidebar { background: var(--as-cream); }
-.cart-header { background: var(--as-cream); border-bottom-color: var(--as-line); }
-.order-summary, .shipping-price-info { background: var(--as-cream-soft); }
-.payment-btn { border-color: var(--as-line); }
-.payment-btn.selected { border-color: var(--as-gold-dark); background: var(--as-cream-soft); }
-.place-order-btn { background: var(--as-ink); border-radius: 30px; }
-.place-order-btn:hover { background: var(--as-gold-dark); }
-
-.footer { background: var(--as-ink); }
-.footer-col h3 { letter-spacing: 3px; font-size: 1rem; position: relative; padding-bottom: 0.6rem; }
-.footer-col h3::after { content: ''; position: absolute; left: 0; bottom: 0; width: 32px; height: 2px; background: var(--as-gold); }
-.footer-col a:hover { color: var(--as-gold); }
-.social-icons a { border: 1px solid #444; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.social-icons a:hover { border-color: var(--as-gold); background: var(--as-gold); color: var(--as-ink); }
-
     </style>
 </head>
 
 <body>
-
-    <div class="as-announce">✦ 925 Sterling Silver ✦ Handcrafted Pieces ✦ Certificate of Authenticity ✦</div>
 
     <div id="preloader"><div class="loader-text">ZIRA</div></div>
 
@@ -357,13 +289,6 @@ body { background-color: var(--as-cream); color: var(--as-ink); }
             <button class="shop-btn" onclick="document.getElementById('shopSection').scrollIntoView({behavior:'smooth'})">SHOP COLLECTION</button>
         </div>
     </section>
-
-    <div class="as-trust">
-        <div class="as-trust-item"><i class="fas fa-gem"></i><span>Pure 925 Silver</span></div>
-        <div class="as-trust-item"><i class="fas fa-hand-sparkles"></i><span>Handcrafted</span></div>
-        <div class="as-trust-item"><i class="fas fa-shield-alt"></i><span>Certified Authentic</span></div>
-        <div class="as-trust-item"><i class="fas fa-truck"></i><span>Fast Delivery</span></div>
-    </div>
 
     <div class="filters-section" id="shopSection">
         <div class="filter-buttons" id="filterButtons">
@@ -547,7 +472,7 @@ function renderProducts() {
         const isFav = isFavourite(p.id);
 
         return `
-        <div class="product-card fade-in-up" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
+        <div class="product-card" data-product-id="${p.id}" onclick="openProductModal(${p.id})">
 
             <div class="product-image-wrapper">
 
@@ -610,7 +535,18 @@ function renderProducts() {
         </div>
         `;
     }).join('');
-    requestAnimationFrame(updateScrollFadeCards);
+    // Fade Up Observer
+requestAnimationFrame(() => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.product-card').forEach(card => observer.observe(card));
+});
 }
      function openProductModal(id) {
 
@@ -1133,41 +1069,7 @@ window.validateAndSendOrder = async function() {
 }
 
 // ========== UPDATE window.load event ==========
-
-let _fadeCards = [];
-let _fadeTicking = false;
-
-function updateScrollFadeCards() {
-    _fadeTicking = false;
-    _fadeCards = Array.from(document.querySelectorAll('.fade-in-up'));
-
-    const vh = window.innerHeight;
-    const startPoint = vh * 0.95;
-    const endPoint = vh * 0.55;
-
-    for (const card of _fadeCards) {
-        const rect = card.getBoundingClientRect();
-        if (rect.bottom < -50 || rect.top > vh + 50) continue;
-
-        let progress = (startPoint - rect.top) / (startPoint - endPoint);
-        progress = Math.max(0, Math.min(1, progress));
-
-        card.style.opacity = progress;
-        card.style.transform = `translateY(${50 * (1 - progress)}px)`;
-
-        if (progress >= 1) card.classList.add('show'); else card.classList.remove('show');
-    }
-}
-
-function onFadeScroll() {
-    if (!_fadeTicking) {
-        _fadeTicking = true;
-        requestAnimationFrame(updateScrollFadeCards);
-    }
-}
-
-window.addEventListener('scroll', onFadeScroll, { passive: true });
-window.addEventListener('resize', onFadeScroll);
+// استبدل الـ window.load الموجود ده:
 window.addEventListener('load', async () => {
     setTimeout(() => {
         let p = document.getElementById('preloader');
