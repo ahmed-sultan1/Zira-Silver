@@ -595,27 +595,32 @@
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+        padding: 0 0.5rem;
     }
     
     .collections-text {
         order: 1;
-        padding: 0 1rem;
+        padding: 0 0.5rem;
         width: 100%;
     }
     
     .collections-text .label {
-        font-size: 0.5rem;
+        font-size: 0.55rem;
+        letter-spacing: 0.2em;
     }
     
     .collections-text h2 {
-        font-size: 1.4rem !important;
+        font-size: 1.8rem !important;
+        font-weight: 700 !important;
         margin-bottom: 0.8rem;
+        line-height: 1.2;
     }
     
     .collections-text p {
-        font-size: 0.75rem;
-        line-height: 1.5;
+        font-size: 0.8rem;
+        line-height: 1.6;
         margin-bottom: 0.5rem;
+        max-width: 100%;
     }
     
     .collections-link {
@@ -628,7 +633,7 @@
         grid-template-columns: 1fr 1fr;
         gap: 0.8rem;
         width: 100%;
-        padding: 0 0.5rem;
+        padding: 0;
     }
     
     .collections-image-main {
@@ -642,6 +647,7 @@
         height: 100%;
         object-fit: cover;
         border-radius: 12px;
+        min-height: 300px;
     }
     
     .collections-image-stacked {
@@ -656,8 +662,10 @@
         height: 100%;
         object-fit: cover;
         border-radius: 12px;
+        min-height: 140px;
     }
-}/* ─── Top Weekly Products ────────────────────────────────────────── */
+}
+/* ─── Top Weekly Products ────────────────────────────────────────── */
 .weekly-products {
     padding: 4rem 5% 6rem;
     max-width: 1440px;
