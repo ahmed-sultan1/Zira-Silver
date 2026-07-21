@@ -132,6 +132,11 @@
             opacity: 0.5;
         }
 
+        /* ─── Mobile Menu Close Button ────────────────────────────── */
+        .mobile-menu-close {
+            display: none;
+        }
+
         .nav-icons {
             display: flex;
             gap: 1.2rem;
@@ -665,7 +670,6 @@
     pointer-events: none;
 }
 
-/* ─── الصورة والنص جنب بعض ──────────────────────────────────────── */
 .weekly-card .weekly-image {
     flex: 0 0 50%;
     overflow: hidden;
@@ -747,7 +751,7 @@
 
 /* ─── Card Far (بعيد) ────────────────────────────────────────────── */
 .weekly-card.far {
-    display: none;   /* بدل opacity: 0.15 */
+    display: none;
 }
 
 /* ─── Add to Bag Button ──────────────────────────────────────────── */
@@ -2298,14 +2302,50 @@
             .nav-links {
                 display: none;
             }
+            .nav-links.mobile-open {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(248, 246, 242, 0.98);
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                z-index: 999;
+                padding: 2rem;
+            }
+            .nav-links.mobile-open a {
+                color: #1a1a1a !important;
+                font-size: 1.2rem;
+            }
+            
+            /* إظهار زر الإغلاق في الموبايل عند فتح القائمة */
+            .nav-links.mobile-open .mobile-menu-close {
+                display: block !important;
+                position: fixed;
+                top: 1.5rem;
+                right: 1.5rem;
+                background: none;
+                border: none;
+                font-size: 1.8rem;
+                color: #1a1a1a;
+                cursor: pointer;
+                z-index: 1001;
+                padding: 0.3rem;
+                font-weight: 300;
+            }
+            
             #aboutSection,
-    #productsSection,
-    #collectionsSection,
-    #newsletterSection,
-    .weekly-products,
-    .categories-section {
-        scroll-margin-top: 70px;
-    }
+            #productsSection,
+            #collectionsSection,
+            #newsletterSection,
+            .weekly-products,
+            .categories-section {
+                scroll-margin-top: 70px;
+            }
             .hero-text h1 {
                 font-size: clamp(2.5rem, 10vw, 3.5rem);
             }
@@ -2539,25 +2579,6 @@
             flex-direction: column;
             gap: 5px;
         }
-        mobile-menu-close {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .nav-links.mobile-open .mobile-menu-close {
-                display: block;
-                position: fixed;
-                top: 1.5rem;
-                left: 1.5rem;
-                background: none;
-                border: none;
-                font-size: 1.6rem;
-                color: #1a1a1a;
-                cursor: pointer;
-                z-index: 1001;
-                padding: 0.3rem;
-            }
-        }
         .menu-btn span {
             display: block;
             width: 22px;
@@ -2581,28 +2602,6 @@
         @media (max-width: 768px) {
             .menu-btn {
                 display: flex;
-            }
-            .nav-links {
-                display: none;
-            }
-            .nav-links.mobile-open {
-                display: flex;
-                flex-direction: column;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(248, 246, 242, 0.98);
-                justify-content: center;
-                align-items: center;
-                gap: 2rem;
-                z-index: 999;
-                padding: 2rem;
-            }
-            .nav-links.mobile-open a {
-                color: #1a1a1a !important;
-                font-size: 1.2rem;
             }
         }
         /* ─── Weekly Products Animation ────────────────────────────────── */
@@ -2834,14 +2833,16 @@
     <!-- ─── Navbar ──────────────────────────────────────────────────── -->
     <nav class="navbar" id="navbar">
         <a href="#" class="logo">ZIRA</a>
-      <div class="nav-links" id="navLinks">
-        <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
-    <a onclick="goToCollections(); closeMobileMenu();">Collections</a>
-    <a onclick="goToRings(); closeMobileMenu();">Rings</a>
-    <a onclick="goToNecklaces(); closeMobileMenu();">Necklaces</a>
-    <a onclick="goToEarrings(); closeMobileMenu();">Earrings</a>
-    <a onclick="document.getElementById('aboutSection').scrollIntoView({behavior:'smooth'}); closeMobileMenu();">About</a>
-</div>
+        <div class="nav-links" id="navLinks">
+            <!-- زر الإغلاق - يظهر فقط في الموبايل عند فتح القائمة -->
+            <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+            
+            <a onclick="goToCollections(); closeMobileMenu();">Collections</a>
+            <a onclick="goToRings(); closeMobileMenu();">Rings</a>
+            <a onclick="goToNecklaces(); closeMobileMenu();">Necklaces</a>
+            <a onclick="goToEarrings(); closeMobileMenu();">Earrings</a>
+            <a onclick="document.getElementById('aboutSection').scrollIntoView({behavior:'smooth'}); closeMobileMenu();">About</a>
+        </div>
         <div class="nav-icons">
             <a href="#" onclick="toggleSearch()"><i class="fas fa-search"></i></a>
             <button class="icon-btn" onclick="toggleFavourites()" style="position: relative;">
@@ -4097,10 +4098,11 @@
                 }, 1000);
             });
         })();
+
    // ─── Navigation Functions ──────────────────────────────────────
 function goToCollections() {
-    filterProducts('all');  // يعرض كل المنتجات
-    document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });  // يوديك للـ Products
+    filterProducts('all');
+    document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });
 }
 
 function goToRings() {
@@ -4295,7 +4297,6 @@ function updateWeeklyCarousel() {
         card.classList.remove('active', 'adjacent', 'far');
         
         let diff = i - weeklyIndex;
-        // التعامل مع الـ wrap-around
         if (diff > total / 2) diff -= total;
         if (diff < -total / 2) diff += total;
         
@@ -4305,6 +4306,29 @@ function updateWeeklyCarousel() {
             card.classList.add('adjacent');
         } else {
             card.classList.add('far');
+        }
+        
+        // إضافة حدث للزر عند النقر
+        const addBtn = card.querySelector('.weekly-add-btn');
+        if (addBtn) {
+            addBtn.onclick = function(e) {
+                e.stopPropagation();
+                const productName = card.querySelector('.weekly-info h3')?.innerText || 'Product';
+                const productPrice = parseFloat(card.querySelector('.weekly-price')?.innerText.replace('EGP ', '').replace(',', '')) || 0;
+                const productImg = card.querySelector('.weekly-image img')?.src || '';
+                
+                cart.push({
+                    id: Date.now() + Math.random(),
+                    name: productName,
+                    price: productPrice,
+                    image: productImg,
+                    selectedColor: 'Silver',
+                    selectedSize: 'One Size'
+                });
+                
+                updateCartUI();
+                showToast(`🛍️ ${productName} added to bag!`);
+            };
         }
     });
     
