@@ -86,6 +86,15 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         }
+        /* ─── Scroll Offset for Fixed Navbar ──────────────────────────── */
+        #aboutSection,
+        #productsSection,
+        #collectionsSection,
+        #newsletterSection,
+        .weekly-products,
+        .categories-section {
+            scroll-margin-top: 90px;
+        }
 
         .logo {
             font-size: 1.8rem;
@@ -2794,15 +2803,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* ─── Scroll Offset for Fixed Navbar ──────────────────────────── */
-#aboutSection,
-#productsSection,
-#collectionsSection,
-#newsletterSection,
-.weekly-products,
-.categories-section {
-    scroll-margin-top: 90px;
-}
     </style>
 </head>
 
@@ -2816,11 +2816,11 @@
     <nav class="navbar" id="navbar">
         <a href="#" class="logo">ZIRA</a>
       <div class="nav-links" id="navLinks">
-    <a onclick="goToCollections()">Collections</a>
-    <a onclick="goToRings()">Rings</a>
-    <a onclick="goToNecklaces()">Necklaces</a>
-    <a onclick="goToEarrings()">Earrings</a>
-    <a onclick="document.getElementById('aboutSection').scrollIntoView({behavior:'smooth'})">About</a>
+    <a onclick="goToCollections(); closeMobileMenu();">Collections</a>
+    <a onclick="goToRings(); closeMobileMenu();">Rings</a>
+    <a onclick="goToNecklaces(); closeMobileMenu();">Necklaces</a>
+    <a onclick="goToEarrings(); closeMobileMenu();">Earrings</a>
+    <a onclick="document.getElementById('aboutSection').scrollIntoView({behavior:'smooth'}); closeMobileMenu();">About</a>
 </div>
         <div class="nav-icons">
             <a href="#" onclick="toggleSearch()"><i class="fas fa-search"></i></a>
@@ -3505,6 +3505,10 @@
             const btn = document.getElementById('menuBtn');
             menu.classList.toggle('mobile-open');
             btn.classList.toggle('open');
+        }
+        function closeMobileMenu() {
+            document.getElementById('navLinks').classList.remove('mobile-open');
+            document.getElementById('menuBtn').classList.remove('open');
         }
 
         // ─── Navbar Scroll ──────────────────────────────────────────
