@@ -859,109 +859,61 @@
 }
 
 @media (max-width: 768px) {
-    /* ─── Weekly Products Mobile Fix ─────────────────────────── */
+    .weekly-carousel {
+        padding: 1rem 0;
+    }
     .weekly-track {
-        padding: 0 20px;
+        display: flex;
         gap: 1rem;
-        justify-content: center;
+        padding: 0 5%;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
     }
-    
-    .weekly-card {
-        flex: 0 0 200px;
-        flex-direction: column;
-        border-radius: 12px;
-    }
-    
-    .weekly-card .weekly-image {
-        flex: 0 0 100%;
-        height: 160px;
-    }
-    
-    .weekly-card .weekly-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .weekly-card .weekly-info {
-        padding: 0.8rem;
-    }
-    
-    .weekly-card .weekly-info h3 {
-        font-size: 0.85rem;
-    }
-    
-    .weekly-card .weekly-info .weekly-price {
-        font-size: 0.8rem;
-    }
-    
-    .weekly-card.active {
-        transform: scale(1);
-        flex: 0 0 220px;
-    }
-    
-    .weekly-card.adjacent {
-        transform: scale(0.85);
-        flex: 0 0 170px;
-    }
-    
-    .weekly-card.far {
+    .weekly-track::-webkit-scrollbar {
         display: none;
     }
-    
-    .weekly-arrow {
-        width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
-    }
-    
-    .weekly-arrow.prev {
-        left: -5px;
-    }
-    
-    .weekly-arrow.next {
-        right: -5px;
-    }
-    .weekly-track {
-        padding: 0 40px;
-        gap: 1.5rem;
-    }
-    
-    .weekly-card {
-        flex: 0 0 240px;
-    }
-    
-    .weekly-card.active {
-        transform: scale(1);
-    }
-    
-    .weekly-card.adjacent {
-        transform: scale(0.8);
-    }
-    
-    .weekly-card.far {
-        display: none;
-    }
-    
-    .weekly-arrow {
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-    }
-}
 
-@media (max-width: 480px) {
-    .weekly-card {
-        flex: 0 0 200px;
+    .weekly-card,
+    .weekly-card.active,
+    .weekly-card.adjacent,
+    .weekly-card.far {
+        display: flex;
+        flex: 0 0 78%;
+        max-width: 300px;
+        opacity: 1;
+        transform: none;
+        pointer-events: all;
+        scroll-snap-align: start;
     }
-    
-    .weekly-card.adjacent {
+    .weekly-card:hover,
+    .weekly-card.active:hover {
+        transform: none;
+    }
+
+    .weekly-card .weekly-image {
+        flex: 0 0 45%;
+    }
+    .weekly-card .weekly-info {
+        padding: 1rem;
+    }
+    .weekly-card .weekly-info h3 {
+        font-size: 0.95rem;
+    }
+    .weekly-card .weekly-add-btn {
+        opacity: 1;
+        transform: none;
+        position: static;
+        margin-top: 0.6rem;
+    }
+
+    .weekly-arrow {
         display: none;
     }
-    
-    .weekly-track {
-        padding: 0 30px;
-        gap: 1rem;
+    .weekly-dots {
+        display: none;
     }
 }
         /* ─── About Section (Image + Description) ────────────────────── */
@@ -2945,9 +2897,9 @@
 
     .collections-images {
         float: right;
-        width: 46%;
-        max-width: 260px;
-        margin: 0 0 1rem 1.2rem;
+        width: 56%;
+        max-width: 320px;
+        margin: 0 0 1rem 1rem;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.6rem;
@@ -2964,7 +2916,7 @@
     }
     .collections-image-stacked {
         display: grid;
-        gap: 0.6rem;
+        gap: 1rem;
     }
     .collections-image-stacked img {
         aspect-ratio: 1/1;
@@ -3011,9 +2963,9 @@
     .about-image,
     .philosophy-image {
         float: left;
-        width: 46%;
-        max-width: 260px;
-        margin: 0 1.2rem 1rem 0;
+        width: 56%;
+        max-width: 320px;
+        margin: 0 1rem 1rem 0;
     }
     .about-image img,
     .philosophy-image img {
@@ -3052,6 +3004,12 @@
     .philosophy-grid {
         clear: both;
         margin-top: 1rem;
+    }
+    .collections-image-main img,
+    .collections-image-stacked img,
+    .about-image img,
+    .philosophy-image img {
+        cursor: pointer;
     }
 }
     </style>
@@ -3273,7 +3231,6 @@
                 <span class="label">02 — About Us</span>
                 <h2>Handcrafted Silver<br /><span>With Passion</span></h2>
                 <p>At ZIRA, we believe jewelry should carry time — the time spent forging it, and the time it will outlast its wearer. We source exclusively from certified recycled silver, and every piece carries our hallmark of origin.</p>
-                <p>We never produce to stock. Each piece is made in response to your order, ensuring it arrives as the singular object it was meant to be.</p>
                 <a class="about-link" onclick="openModal('about')">Learn More →</a>
             </div>
         </div>
@@ -3304,8 +3261,7 @@
             <div class="philosophy-text">
                 <span class="label">04 — Our Philosophy</span>
                 <h2>Silver is not a<br />material. It is a<br /><span>medium.</span></h2>
-                <p>At ZIRA, we believe jewelry should carry time — the time spent forging it, and the time it will outlast its wearer. We source exclusively from certified recycled silver, and every piece carries our hallmark of origin.</p>
-                <p>We never produce to stock. Each piece is made in response to your order, ensuring it arrives as the singular object it was meant to be.</p>
+                <p>At ZIRA We believe jewelry should feel personal, enduring, and effortlessly elegant—made to accompany you through every chapter of life..</p>
                 <div class="philosophy-grid">
                     <div class="item">
                         <div class="label">Material</div>
@@ -3313,7 +3269,7 @@
                     </div>
                     <div class="item">
                         <div class="label">Origin</div>
-                        <div class="value">Cairo, Egypt</div>
+                        <div class="value">Dessouq, Kafr El Sheikh, Egypt</div>
                     </div>
                     <div class="item">
                         <div class="label">Lead time</div>
@@ -3348,7 +3304,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="#" class="logo">ZIRA</a>
-                    <p>Fine silver jewelry, made slowly and made to last. Atelier: Cairo, Egypt.</p>
+                    <p>Fine silver jewelry, made slowly and made to last. Atelier: Dessouq, Kafr El Sheikh, Egypt.</p>
                     <div class="social">
                         <a href="#" id="instagramLink"><i class="fab fa-instagram"></i> Instagram</a>
                         <a href="#" id="facebookLink"><i class="fab fa-facebook-f"></i> Facebook</a>
@@ -4194,7 +4150,7 @@
             let body = document.getElementById('modalBody');
 
             const content = {
-                'about': '<h2>About ZIRA</h2><p>ZIRA is a fine silver jewelry brand based in Cairo, Egypt. We craft each piece with care and dedication to quality.</p>',
+                'about': '<h2>About ZIRA</h2><p>ZIRA is a fine silver jewelry brand based in Dessouq, Egypt. We craft each piece with care and dedication to quality.</p>',
                 'craftsmanship': '<h2>Our Craftsmanship</h2><p>Each piece is handcrafted by master jewelers with decades of experience. We use only recycled 925 sterling silver.</p>',
                 'sustainability': '<h2>Sustainability</h2><p>We are committed to sustainable practices. All our silver is recycled and we minimize waste in our production.</p>',
                 'sizing': '<h2>Sizing Guide</h2><p>Our rings are available in sizes 5-9. Please contact us if you need a custom size.</p>',
@@ -4601,27 +4557,24 @@ function animateWeekly() {
         weekly.classList.add('visible');
     }
 }
-// ─── Zoom Image on Click ───────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-    const allImages = document.querySelectorAll(
+// ─── Zoom Image on Click (delegation - أضمن ويشتغل دايمًا) ─────
+document.addEventListener('click', function(e) {
+    const img = e.target.closest(
         '.collections-image-main img, ' +
         '.collections-image-stacked img, ' +
         '.weekly-image img, ' +
         '.about-image img, ' +
         '.philosophy-image img'
     );
-    
-    allImages.forEach(img => {
-        img.style.cursor = 'pointer';
-        img.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const src = this.getAttribute('src');
-            if (src) {
-                zoomImage(src);
-            }
-        });
-    });
+    if (img) {
+        e.stopPropagation();
+        const src = img.getAttribute('src');
+        if (src) {
+            zoomImage(src);
+        }
+    }
 });
+
     </script>
 
 </body>
