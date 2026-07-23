@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
+const { sendOrderNotification } = require('./mailer');
 const app = express();
 
 // ========== CLOUDINARY CONFIG ==========
@@ -196,8 +196,15 @@ app.post('/api/orders', async (req, res) => {
         }
 
         const newOrder = { orderId, name, email: email || '', phone, address, city, postcode: postcode || '', date: new Date().toLocaleString(), paymentMethod: paymentMethod || 'cod', items, subtotal: Number(subtotal) || 0, shipping: Number(shipping) || 0, total: Number(total) || 0, status: 'pending' };
-        await col('orders').insertOne(newOrder);
-        res.json({ success: true, order: newOrder });
+await col('orders').insertOne(newOrder);
+
+try {
+    await sendOrderNotification(newOrder);
+} catch (mailErr) {
+    console.error('Order notification email failed:', mailErr.message);
+}
+
+res.json({ success: true, order: newOrder });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
