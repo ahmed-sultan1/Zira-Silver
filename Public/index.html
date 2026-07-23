@@ -3035,20 +3035,27 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.5rem;
+        aspect-ratio: 3 / 4;   /* ده اللي بيدي للكونتينر ارتفاع ثابت */
     }
     .collections-image-main {
         grid-row: span 2;
+        height: 100%;
     }
     .collections-image-main img {
-        aspect-ratio: 3/4;
+        width: 100%;
         height: 100%;
+        object-fit: cover;
     }
     .collections-image-stacked {
         display: grid;
+        grid-template-rows: 1fr 1fr;
         gap: 0.5rem;
+        height: 100%;
     }
     .collections-image-stacked img {
-        aspect-ratio: 1/1;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 }
 /* ─── Discount Badge Shine Effect ────────────────────────────── */
