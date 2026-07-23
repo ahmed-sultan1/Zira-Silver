@@ -2884,133 +2884,122 @@
             }
         }
         @media (max-width: 768px) {
-   /* ─── Collections Mobile Fix (image floats, text wraps) ──── */
-    .collections-inner {
-        display: block;
-        padding: 0 1rem;
-    }
-    .collections-inner::after {
-        content: "";
-        display: table;
-        clear: both;
-    }
+ /* ─── Collections / About / Philosophy: Mobile — Title beside image, description below ─── */
 
-    .collections-images {
-        float: right;
-        width: 56%;
-        max-width: 320px;
-        margin: 0 0 1rem 1rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.6rem;
-    }
-    .collections-image-main {
-        grid-row: span 2;
-    }
-    .collections-image-main img {
-        aspect-ratio: 3/4;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 12px;
-    }
-    .collections-image-stacked {
-        display: grid;
-        gap: 1rem;
-    }
-    .collections-image-stacked img {
-        aspect-ratio: 1/1;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 12px;
-    }
+/* Collections — النص شمال، الصور يمين */
+.collections-inner {
+    display: grid;
+    grid-template-columns: 1fr 42%;
+    grid-template-areas:
+        "label img"
+        "title img"
+        "desc desc"
+        "link link";
+    gap: 0.4rem 1rem;
+    padding: 0 1rem;
+}
+.collections-images { grid-area: img; }
+.collections-text { display: contents; }
+.collections-text .label { grid-area: label; align-self: end; }
+.collections-text h2    { grid-area: title; align-self: start; }
+.collections-text p     { grid-area: desc; margin-top: 0.6rem; }
+.collections-link       { grid-area: link; }
 
-    .collections-text {
-        width: 100%;
-    }
-    .collections-text .label {
-        font-size: 0.55rem;
-        letter-spacing: 0.2em;
-    }
-    .collections-text h2 {
-        font-size: 1.7rem;
-        font-weight: 700;
-        margin-bottom: 0.8rem;
-        line-height: 1.2;
-    }
-    .collections-text p {
-        font-size: 0.85rem;
-        line-height: 1.7;
-        margin-bottom: 0.5rem;
-    }
-    .collections-link {
-        font-size: 0.65rem;
-    }
-    /* ─── About & Philosophy Mobile Fix (image floats, text wraps) ─ */
-    .about-inner,
-    .philosophy-inner {
-        display: block;
-        padding: 0 1rem;
-    }
-    .about-inner::after,
-    .philosophy-inner::after {
-        content: "";
-        display: table;
-        clear: both;
-    }
+.collections-text .label {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+}
+.collections-text h2 {
+    font-size: 1.15rem;
+    line-height: 1.25;
+}
+.collections-text p {
+    font-size: 0.8rem;
+    line-height: 1.65;
+}
+.collections-link {
+    font-size: 0.65rem;
+}
 
-    .about-image,
-    .philosophy-image {
-        float: left;
-        width: 56%;
-        max-width: 320px;
-        margin: 0 1rem 1rem 0;
-    }
-    .about-image img,
-    .philosophy-image img {
-        width: 100%;
-        object-fit: cover;
-        border-radius: 12px;
-    }
-    .about-image img { aspect-ratio: 4/5; }
-    .philosophy-image img { aspect-ratio: 4/5; }
+/* About */
+.about-inner {
+    display: grid;
+    grid-template-columns: 42% 1fr;
+    grid-template-areas:
+        "img label"
+        "img title"
+        "desc desc"
+        "link link";
+    gap: 0.4rem 1rem;
+    padding: 0 1rem;
+}
+.about-image { grid-area: img; }
+.about-text { display: contents; }
+.about-text .label { grid-area: label; align-self: end; }
+.about-text h2    { grid-area: title; align-self: start; }
+.about-text p     { grid-area: desc; margin-top: 0.6rem; }
+.about-link       { grid-area: link; }
 
-    .about-text,
-    .philosophy-text {
-        width: 100%;
-    }
-    .about-text .label,
-    .philosophy-text .label {
-        font-size: 0.55rem;
-        letter-spacing: 0.2em;
-    }
-    .about-text h2,
-    .philosophy-text h2 {
-        font-size: 1.7rem;
-        line-height: 1.2;
-        margin-bottom: 0.8rem;
-    }
-    .about-text p,
-    .philosophy-text p {
-        font-size: 0.85rem;
-        line-height: 1.7;
-        margin-bottom: 0.5rem;
-    }
-    .about-link {
-        font-size: 0.65rem;
-    }
+.about-text .label {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+}
+.about-text h2 {
+    font-size: 1.15rem;
+    line-height: 1.25;
+}
+.about-text p {
+    font-size: 0.8rem;
+    line-height: 1.65;
+}
+.about-link {
+    font-size: 0.65rem;
+}
 
-    .philosophy-grid {
-        clear: both;
-        margin-top: 1rem;
-    }
-    .collections-image-main img,
-    .collections-image-stacked img,
-    .about-image img,
-    .philosophy-image img {
-        cursor: pointer;
-    }
+/* Philosophy */
+.philosophy-inner {
+    display: grid;
+    grid-template-columns: 42% 1fr;
+    grid-template-areas:
+        "img label"
+        "img title"
+        "desc desc"
+        "grid grid";
+    gap: 0.4rem 1rem;
+    padding: 0 1rem;
+}
+.philosophy-image { grid-area: img; }
+.philosophy-text { display: contents; }
+.philosophy-text .label { grid-area: label; align-self: end; }
+.philosophy-text h2    { grid-area: title; align-self: start; }
+.philosophy-text p     { grid-area: desc; margin-top: 0.6rem; }
+.philosophy-grid       { grid-area: grid; margin-top: 1rem; }
+
+.philosophy-text .label {
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+}
+.philosophy-text h2 {
+    font-size: 1.15rem;
+    line-height: 1.25;
+}
+.philosophy-text p {
+    font-size: 0.8rem;
+    line-height: 1.65;
+}
+.philosophy-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    padding-top: 1rem;
+}
+
+/* الصور تفضل بنفس شكل اللابتوب — ما بنلمسش الـ CSS الأساسي بتاعها */
+.collections-image-main img,
+.collections-image-stacked img,
+.about-image img,
+.philosophy-image img {
+    cursor: pointer;
+}
 }
     </style>
 </head>
