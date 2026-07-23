@@ -2454,9 +2454,10 @@
         }
 
         @media (max-width: 480px) {
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
             .hero-text {
                 padding: 80px 5% 40px;
             }
@@ -3000,6 +3001,27 @@
 .philosophy-image img {
     cursor: pointer;
 }
+}
+@media (max-width: 768px) {
+    .product-card.touch-active .quick-add {
+        transform: translateY(0);
+    }
+}
+.collections-images,
+.collections-image-main,
+.collections-image-stacked,
+.about-image,
+.philosophy-image {
+    min-width: 0;
+    overflow: hidden;
+}
+.collections-images img,
+.collections-image-main img,
+.collections-image-stacked img,
+.about-image img,
+.philosophy-image img {
+    max-width: 100%;
+    display: block;
 }
     </style>
 </head>
@@ -3666,6 +3688,7 @@
                     card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                     observer.observe(card);
                 });
+                setupMobileQuickAddReveal();
             });
         }
 
@@ -4563,7 +4586,16 @@ document.addEventListener('click', function(e) {
         }
     }
 });
-
+function setupMobileQuickAddReveal() {
+    if (!("IntersectionObserver" in window) || window.innerWidth > 768) return;
+    const cards = document.querySelectorAll('.product-card');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            entry.target.classList.toggle('touch-active', entry.isIntersecting);
+        });
+    }, { threshold: 0.55, rootMargin: '-20% 0px -20% 0px' });
+    cards.forEach(card => observer.observe(card));
+}
     </script>
 
 </body>
